@@ -2,7 +2,7 @@
 // n'est émise en dehors du chargement de l'appli elle-même.
 import { analyser, nettoyer, coordonnees } from './moteur.js';
 
-const VERSION = '1.0.0';
+const VERSION = '1.0.1';
 const $ = (id) => document.getElementById(id);
 const photos = [];
 let prochainId = 1;
@@ -146,7 +146,8 @@ const FORMATS = { jpeg: 'JPEG', png: 'PNG', webp: 'WebP', heif: 'HEIC', gif: 'GI
 function pastilles(a) {
   const l = [];
   const b = a.bilan;
-  if (b.position) l.push(['Lieu', 'fort']);
+  if (a.positionMasquee && !a.position) l.push(['Lieu masqué par Android', 'moyen']);
+  else if (b.position) l.push(['Lieu', 'fort']);
   if (b.identite) l.push(['Identité, textes', 'fort']);
   if (b.video) l.push(['Vidéo cachée', 'fort']);
   if (b.date) l.push(['Date', 'moyen']);
@@ -203,6 +204,10 @@ function carte(p) {
     const lien = `https://www.openstreetmap.org/?mlat=${lat.toFixed(5)}&mlon=${lon.toFixed(5)}#map=16/${lat.toFixed(5)}/${lon.toFixed(5)}`;
     lieu = h('div', { class: 'lieu' }, 'Cette photo dit où elle a été prise :', h('b', null, coordonnees(lat, lon)),
       h('a', { href: lien, target: '_blank', rel: 'noopener noreferrer' }, 'Voir l’endroit sur une carte (en ligne)'));
+  }
+  else if (a.positionMasquee) {
+    lieu = h('div', { class: 'lieu masque' }, h('b', null, 'Le lieu a été masqué par Android.'),
+      'La photo de votre galerie contient toujours ses coordonnées, mais Android les efface avant de la confier à une appli web : elles ne peuvent pas être affichées ici. La copie faite ici n’en contient aucune.');
   }
   return h('article', { class: 'photo', 'data-id': p.id },
     h('div', { class: 'photo-tete' }, vignette, h('div', null, h('div', { class: 'nom' }, p.fichier.name), h('div', { class: 'fiche' }, fiche), pastilles(a))),

@@ -295,6 +295,11 @@ function champsGps(gps, r) {
   if (lat != null && lon != null && (lat !== 0 || lon !== 0)) {
     r.position = { lat, lon };
     p('Coordonnées GPS', coordonnees(lat, lon));
+  } else if (gps.entrees.has(2) || gps.entrees.has(4)) {
+    // Les rubriques existent mais leurs valeurs sont à zéro : c'est la marque
+    // d'Android, qui efface la position avant de confier une photo à une appli web.
+    r.positionMasquee = true;
+    r.champs.push({ g: 'position', l: 'Coordonnées GPS', v: 'effacées avant d’arriver ici (valeurs à zéro)', s: 1 });
   }
   if (g(6) != null) {
     const alt = ratio(g(6)) * (g(5) === 1 ? -1 : 1);

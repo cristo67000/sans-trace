@@ -70,6 +70,13 @@ def fabriquer():
     (D / "animee.jpg").write_bytes(b + b"\0\0\0\x18ftypmp42" + b"\x00" * 5000)
     im.save(D / "droite.jpg", quality=88, exif=exif(1))
     im.save(D / "nue.jpg", quality=88)
+    # photo telle qu'Android la confie à une appli web : coordonnées mises à zéro
+    e = exif()
+    g = e.get_ifd(0x8825)
+    g[1], g[2], g[3], g[4] = "", (0.0, 0.0, 0.0), "", (0.0, 0.0, 0.0)
+    del g[6], g[5], g[0x1D]
+    g[0x11] = 212.5
+    im.save(D / "masquee.jpg", quality=88, exif=e)
     im.save(D / "progressive.jpg", quality=88, progressive=True, exif=exif(3), xmp=XMP)
     p = PngInfo()
     p.add_text("Software", "Essai PNG")

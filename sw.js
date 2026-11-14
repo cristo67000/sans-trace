@@ -1,6 +1,6 @@
 // Sans trace — service worker : mise en cache complète pour l'usage hors ligne,
 // et réception des photos envoyées par le menu « Partager » du téléphone.
-const VERSION = '1.0.0';
+const VERSION = '1.0.1';
 const CACHE = `sans-trace-${VERSION}`;
 const PARTAGE = 'sans-trace-partage';
 const FICHIERS = [

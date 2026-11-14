@@ -110,6 +110,8 @@ main { max-width: 720px; margin: 0 auto; padding: 0 16px; }
 .lieu { background: var(--fort-fond); color: var(--fort); border-radius: 12px; padding: 10px 12px; font-size: 0.95rem; }
 .lieu b { display: block; font-size: 1.02rem; font-variant-numeric: tabular-nums; }
 .lieu a { color: inherit; font-weight: 600; }
+.lieu.masque { background: var(--moyen-fond); color: var(--moyen); }
+.lieu.masque b { font-size: 1rem; margin-bottom: 2px; }
 
 details.detail { border-top: 1px solid var(--trait); padding-top: 10px; }
 summary { cursor: pointer; font-weight: 600; color: var(--accent); padding: 4px 0; }
