@@ -98,6 +98,13 @@ def fabriquer():
             b[base + v:base + v + 8 * compte] = bytes(8 * compte)
         b[base + e_:base + e_ + 12] = bytes(12)
     (D / "effacee.jpg").write_bytes(bytes(b))
+    # photo d'un appareil qui n'enregistre pas le lieu : seule la direction de visée
+    e = exif()
+    g = e.get_ifd(0x8825)
+    for k in list(g):
+        del g[k]
+    g[0x10], g[0x11] = "M", 78.0
+    im.save(D / "direction.jpg", quality=88, exif=e)
     im.save(D / "progressive.jpg", quality=88, progressive=True, exif=exif(3), xmp=XMP)
     p = PngInfo()
     p.add_text("Software", "Essai PNG")

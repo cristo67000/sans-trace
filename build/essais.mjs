@@ -20,9 +20,11 @@ for (const nom of readdirSync(D).filter((n) => /\.(jpg|png|webp)$/.test(n)).sort
   verifier(!a.erreur, a.erreur);
   verifier(a.largeur === 640 && a.hauteur === 480, 'dimensions');
   const masquee = /masquee|effacee/.test(nom);
-  const charge = !/nue|simple|masquee|effacee/.test(nom);
+  const charge = !/nue|simple|masquee|effacee|direction/.test(nom);
+  if (/direction/.test(nom)) verifier(a.bilan.position && !a.bilan.lieu && !a.positionMasquee && !a.position, 'photo sans coordonnées mal décrite');
+  if (charge) verifier(a.bilan.lieu, 'lieu non signalé');
   if (masquee) verifier(a.positionMasquee && !a.position && a.bilan.date, 'masquage Android non reconnu');
-  else verifier(charge ? a.bilan.position && !a.positionMasquee && a.traces > 5 : a.traces === 0, 'bilan de départ inattendu');
+  else if (!/direction/.test(nom)) verifier(charge ? a.bilan.position && !a.positionMasquee && a.traces > 5 : a.traces === 0, 'bilan de départ inattendu');
   if (charge) verifier(Math.abs(a.position.lat - 48.58170) < 1e-4 && Math.abs(a.position.lon - 7.75069) < 1e-4, 'position mal lue');
 
   const tout = nettoyer(o, 'tout');

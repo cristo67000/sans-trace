@@ -291,7 +291,11 @@ export function coordonnees(lat, lon) {
 function champsGps(gps, r) {
   if (!gps) return;
   const g = (t) => gps.entrees.get(t)?.valeur;
-  const p = (l, v) => { if (v !== '' && v != null) r.champs.push({ g: 'position', l, v: String(v), s: 2 }); };
+  // aux : information du bloc GPS qui ne dit pas où la photo a été prise (direction, vitesse…).
+  const p = (l, v) => {
+    const aux = l !== 'Coordonnées GPS' && l !== 'Altitude';
+    if (v !== '' && v != null) r.champs.push({ g: 'position', l, v: String(v), s: aux ? 1 : 2, aux });
+  };
   const lat = dms(g(2), g(1) ?? 'N', 'S');
   const lon = dms(g(4), g(3) ?? 'E', 'W');
   if (lat != null && lon != null && (lat !== 0 || lon !== 0)) {
@@ -788,7 +792,7 @@ export function analyser(o) {
   r.champs = r.champs.filter((c) => { const k = `${c.l}\n${c.v}`; if (vus.has(k)) return false; vus.add(k); return true; });
   const a = (g) => r.champs.some((c) => c.g === g);
   r.bilan = {
-    position: a('position'), date: a('date'), appareil: a('appareil'), identite: a('auteur'),
+    position: a('position'), lieu: r.champs.some((c) => c.g === 'position' && !c.aux), date: a('date'), appareil: a('appareil'), identite: a('auteur'),
     miniature: r.blocs.some((b) => b.miniature), video: r.blocs.some((b) => b.video),
   };
   // Ce qui compte comme « trace » : tout champ hors orientation, tout bloc hors profil de couleur.

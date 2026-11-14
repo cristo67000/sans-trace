@@ -2,7 +2,7 @@
 // n'est émise en dehors du chargement de l'appli elle-même.
 import { analyser, nettoyer, coordonnees } from './moteur.js';
 
-const VERSION = '1.0.2';
+const VERSION = '1.0.3';
 const $ = (id) => document.getElementById(id);
 const photos = [];
 let prochainId = 1;
@@ -147,7 +147,8 @@ function pastilles(a) {
   const l = [];
   const b = a.bilan;
   if (a.positionMasquee && !a.position) l.push(['Lieu masqué par Android', 'moyen']);
-  else if (b.position) l.push(['Lieu', 'fort']);
+  else if (b.lieu) l.push(['Lieu', 'fort']);
+  else if (b.position) l.push(['GPS sans coordonnées', '']);
   if (b.identite) l.push(['Identité, textes', 'fort']);
   if (b.video) l.push(['Vidéo cachée', 'fort']);
   if (b.date) l.push(['Date', 'moyen']);
@@ -205,7 +206,10 @@ function carte(p) {
     lieu = h('div', { class: 'lieu' }, 'Cette photo dit où elle a été prise :', h('b', null, coordonnees(lat, lon)),
       h('a', { href: lien, target: '_blank', rel: 'noopener noreferrer' }, 'Voir l’endroit sur une carte (en ligne)'));
   }
-  else if (a.positionMasquee) {
+  else if (a.bilan.position && !a.bilan.lieu) {
+    lieu = h('div', { class: 'lieu neutre' }, h('b', null, 'Pas de coordonnées GPS dans cette photo.'),
+      'Elle indique seulement la direction dans laquelle l’appareil était tourné : l’appareil photo n’a pas enregistré le lieu.');
+  } else if (a.positionMasquee) {
     lieu = h('div', { class: 'lieu masque' }, h('b', null, 'Le lieu a été masqué par Android.'),
       'La photo de votre galerie contient toujours ses coordonnées, mais Android les efface avant de la confier à une appli web : elles ne peuvent pas être affichées ici. La copie faite ici n’en contient aucune.');
   }
