@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sans trace — les métadonnées de vos photos</title>
+<meta name="description" content="Voir ce que vos photos racontent (lieu, date, appareil) et l’effacer avant de les partager. Tout se passe dans le téléphone.">
+<meta name="theme-color" content="#0f4c4c">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icone-192.png">
+<link rel="apple-touch-icon" href="icons/icone-192.png">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="entete">
+  <div class="titre">
+    <img src="icons/icone-192.png" alt="" width="36" height="36">
+    <div>
+      <h1>Sans trace</h1>
+      <p>Ce que vos photos racontent, et comment l’effacer</p>
+    </div>
+  </div>
+  <button id="installer" class="discret" hidden>Installer</button>
+</header>
+
+<main>
+  <section id="accueil" class="accueil">
+    <label class="bouton principal grand" for="choix">Choisir des photos</label>
+    <p class="rassurant">Rien n’est envoyé : les photos ne quittent pas l’appareil, et les originaux ne sont jamais modifiés.</p>
+    <ol class="etapes">
+      <li><b>Voir</b> le lieu, la date, l’appareil et tout ce que la photo contient en plus de l’image.</li>
+      <li><b>Enlever</b> ces informations, sans recompresser ni abîmer l’image.</li>
+      <li><b>Partager</b> la copie nettoyée vers n’importe quelle appli, ou l’enregistrer.</li>
+    </ol>
+  </section>
+
+  <section id="reglages" class="reglages" hidden>
+    <div class="segment" role="radiogroup" aria-label="Ce qu’il faut enlever">
+      <label><input type="radio" name="mode" value="tout" checked><span>Tout enlever</span></label>
+      <label><input type="radio" name="mode" value="position"><span>Le lieu seulement</span></label>
+    </div>
+    <label class="case"><input type="checkbox" id="renommer" checked><span>Renommer les copies <small>(le nom d’origine contient souvent la date)</small></span></label>
+  </section>
+
+  <div id="liste" class="liste" aria-live="polite"></div>
+
+  <section id="suite" class="suite" hidden>
+    <label class="bouton" for="choix">Ajouter des photos</label>
+    <button id="vider" class="bouton">Tout retirer de la liste</button>
+  </section>
+
+  <details class="savoir">
+    <summary>Bon à savoir</summary>
+    <ul>
+      <li><b>Aucune connexion nécessaire.</b> L’appli fonctionne hors ligne et ne transmet rien.</li>
+      <li><b>L’original reste intact</b> dans votre galerie : l’appli fabrique une copie nettoyée.</li>
+      <li><b>L’image n’est pas recompressée</b> (JPEG, PNG, WebP) : seuls les blocs d’informations sont ôtés. Le sens de l’image et le profil de couleur sont conservés pour qu’elle s’affiche comme avant.</li>
+      <li><b>Sur Android, le lieu peut déjà manquer.</b> Le système masque souvent la position GPS avant de confier une photo à une appli web. Si aucun lieu n’apparaît ici, l’original de la galerie peut tout de même en contenir un — la copie produite ici, elle, n’en a pas.</li>
+      <li><b>HEIC et autres formats</b> : les informations sont lues quand c’est possible ; la copie est alors réenregistrée en JPEG, si le navigateur sait ouvrir l’image.</li>
+      <li><b>Ce que l’image montre reste visible</b> : une plaque, une façade ou un visage ne sont pas des métadonnées.</li>
+    </ul>
+    <p class="version">Sans trace <span id="version"></span></p>
+  </details>
+</main>
+
+<div id="barre" class="barre" hidden>
+  <button id="partager-tout" class="bouton principal"></button>
+  <button id="enregistrer-tout" class="bouton">Enregistrer</button>
+</div>
+
+<dialog id="pretes">
+  <p id="pretes-texte"></p>
+  <div class="actions">
+    <button id="pretes-partager" class="bouton principal">Partager maintenant</button>
+    <button id="pretes-fermer" class="bouton">Fermer</button>
+  </div>
+</dialog>
+<div id="message" class="message" role="status" hidden></div>
+
+<input id="choix" type="file" accept="image/*" multiple class="invisible">
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
