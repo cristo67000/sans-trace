@@ -19,8 +19,8 @@ for (const nom of readdirSync(D).filter((n) => /\.(jpg|png|webp)$/.test(n)).sort
   if (nom === 'photo.jpg') for (const c of a.champs) console.log(`     [${c.g}] ${c.l} : ${c.v}`);
   verifier(!a.erreur, a.erreur);
   verifier(a.largeur === 640 && a.hauteur === 480, 'dimensions');
-  const masquee = /masquee/.test(nom);
-  const charge = !/nue|simple|masquee/.test(nom);
+  const masquee = /masquee|effacee/.test(nom);
+  const charge = !/nue|simple|masquee|effacee/.test(nom);
   if (masquee) verifier(a.positionMasquee && !a.position && a.bilan.date, 'masquage Android non reconnu');
   else verifier(charge ? a.bilan.position && !a.positionMasquee && a.traces > 5 : a.traces === 0, 'bilan de départ inattendu');
   if (charge) verifier(Math.abs(a.position.lat - 48.58170) < 1e-4 && Math.abs(a.position.lon - 7.75069) < 1e-4, 'position mal lue');

@@ -77,6 +77,27 @@ def fabriquer():
     del g[6], g[5], g[0x1D]
     g[0x11] = 212.5
     im.save(D / "masquee.jpg", quality=88, exif=e)
+    # autre forme de masquage, vue sur un Pixel : les rubriques GPS sont entièrement
+    # remises à zéro (étiquette comprise), seule la direction de visée subsiste
+    e = exif()
+    e.get_ifd(0x8825)[0x11] = 330.0
+    im.save(D / "effacee.jpg", quality=88, exif=e)
+    b = bytearray((D / "effacee.jpg").read_bytes())
+    base = b.index(b"Exif" + bytes(2)) + 6
+    boutisme = "<" if b[base:base + 2] == b"II" else ">"
+    lire = lambda fmt, p: struct.unpack_from(boutisme + fmt, b, base + p)
+    ifd0 = lire("I", 4)[0]
+    gps = next(lire("I", ifd0 + 2 + i * 12 + 8)[0] for i in range(lire("H", ifd0)[0]) if lire("H", ifd0 + 2 + i * 12)[0] == 0x8825)
+    for i in range(lire("H", gps)[0]):
+        e_ = gps + 2 + i * 12
+        tag, typ, compte = lire("HHI", e_)
+        if tag == 0x11:
+            continue
+        if typ in (5, 10):
+            v = lire("I", e_ + 8)[0]
+            b[base + v:base + v + 8 * compte] = bytes(8 * compte)
+        b[base + e_:base + e_ + 12] = bytes(12)
+    (D / "effacee.jpg").write_bytes(bytes(b))
     im.save(D / "progressive.jpg", quality=88, progressive=True, exif=exif(3), xmp=XMP)
     p = PngInfo()
     p.add_text("Software", "Essai PNG")

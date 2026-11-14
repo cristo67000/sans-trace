@@ -2,7 +2,7 @@
 // n'est émise en dehors du chargement de l'appli elle-même.
 import { analyser, nettoyer, coordonnees } from './moteur.js';
 
-const VERSION = '1.0.1';
+const VERSION = '1.0.2';
 const $ = (id) => document.getElementById(id);
 const photos = [];
 let prochainId = 1;

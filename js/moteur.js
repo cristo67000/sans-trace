@@ -115,18 +115,20 @@ function lireTiff(o, base, fin) {
     const nb = v.getUint16(pos, le);
     if (nb > 2000 || pos + 2 + nb * 12 > n) return null;
     const entrees = new Map();
+    let effaces = 0; // rubriques entièrement remises à zéro (masquage d'Android)
     for (let i = 0; i < nb; i++) {
       const e = pos + 2 + i * 12;
       const tag = v.getUint16(e, le);
       const type = v.getUint16(e + 2, le);
       const compte = v.getUint32(e + 4, le);
+      if (!tag && !type && !compte) { effaces++; continue; }
       const t = (TAILLES[type] || 0) * compte;
       const pv = t > 4 ? v.getUint32(e + 8, le) : e + 8;
       if (!t || pv + t > n) { entrees.set(tag, { tag, type, compte, e, pv: -1, t: 0, valeur: null }); continue; }
       entrees.set(tag, { tag, type, compte, e, pv, t, valeur: valeur(type, compte, pv) });
     }
     const ps = pos + 2 + nb * 12;
-    return { pos, nb, entrees, suivant: ps + 4 <= n ? v.getUint32(ps, le) : 0 };
+    return { pos, nb, entrees, effaces, suivant: ps + 4 <= n ? v.getUint32(ps, le) : 0 };
   }
 
   const ifd0 = lireIfd(v.getUint32(4, le));
@@ -295,11 +297,11 @@ function champsGps(gps, r) {
   if (lat != null && lon != null && (lat !== 0 || lon !== 0)) {
     r.position = { lat, lon };
     p('Coordonnées GPS', coordonnees(lat, lon));
-  } else if (gps.entrees.has(2) || gps.entrees.has(4)) {
-    // Les rubriques existent mais leurs valeurs sont à zéro : c'est la marque
-    // d'Android, qui efface la position avant de confier une photo à une appli web.
+  } else if (gps.entrees.has(2) || gps.entrees.has(4) || gps.effaces) {
+    // Rubriques aux valeurs à zéro, ou rubriques entièrement effacées : c'est la
+    // marque d'Android, qui masque la position avant de confier une photo à une appli.
     r.positionMasquee = true;
-    r.champs.push({ g: 'position', l: 'Coordonnées GPS', v: 'effacées avant d’arriver ici (valeurs à zéro)', s: 1 });
+    r.champs.push({ g: 'position', l: 'Coordonnées GPS', v: 'effacées avant d’arriver ici', s: 1 });
   }
   if (g(6) != null) {
     const alt = ratio(g(6)) * (g(5) === 1 ? -1 : 1);
